@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define N 8
+
+// 함수 선언
+void printSolution(int board[N][N]);
+bool isSafe(int board[N][N], int row, int col);
+bool solveNQueens(int board[N][N], int row);
+
+int main() {
+    int board[N][N] = { {0} }; // 체스판 초기화
+
+    if (solveNQueens(board, 0)) {
+        printf("Solution found:\n");
+        printSolution(board);
+    }
+    else {
+        printf("Solution not found.\n");
+    }
+
+    return 0;
+}
+
+// 현재 체스판 상태 출력
+void printSolution(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%2d ", board[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+// (row, col) 위치에 퀸을 놓을 수 있는지 확인
+bool isSafe(int board[N][N], int row, int col) {
+    // 같은 열에 퀸이 있는지 확인
+    for (int i = 0; i < row; i++) {
+        if (board[i][col]) {
+            return false;
+        }
+    }
+
+    // 왼쪽 위 대각선에 퀸이 있는지 확인
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j]) {
+            return false;
+        }
+    }
+
+    // 왼쪽 아래 대각선에 퀸이 있는지 확인
+    for (int i = row, j = col; i >= 0 && j < N; i--, j++) {
+        if (board[i][j]) {
+            return false;
+        }
+    }
+
+    return true; // 안전하다면 true 반환
+}
+
+// 백트래킹을 사용하여 N-Queens 문제 풀기
+bool solveNQueens(int board[N][N], int row) {
+    if (row == N) {
+        // 모든 퀸을 배치한 경우
+        return true;
+    }
+
+    for (int i = 0; i < N; i++) {
+        if (isSafe(board, row, i)) {
+            // 현재 위치에 퀸을 놓을 수 있으면 놓고 재귀적으로 다음 행으로 진행
+            board[row][i] = 1;
+
+            if (solveNQueens(board, row + 1)) {
+                return true; // 다음 행에서 해를 찾았으면 true 반환
+            }
+
+            // 다음 행에서 해를 찾지 못했으면 현재 위치에 퀸을 놓지 않음
+            board[row][i] = 0;
+        }
+    }
+
+    return false; // 현재 위치에 퀸을 놓을 수 없으면 false 반환
+}
